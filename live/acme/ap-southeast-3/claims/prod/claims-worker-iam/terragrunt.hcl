@@ -19,6 +19,10 @@ dependency "queue" {
   config_path = "../claims-documents-queue"
 }
 
+dependency "documents" {
+  config_path = "../claim-documents-bucket"
+}
+
 inputs = {
   name              = "claims-worker-prod"
   oidc_provider_arn = dependency.eks.outputs.oidc_provider_arn
@@ -28,11 +32,19 @@ inputs = {
   service_account   = "claims-worker-sa"
 
   policy_statements = [
+    # TODO: tighten to the claims-documents queue + dlq (match the dev stack).
     {
       sid       = "Queue"
       effect    = "Allow"
       actions   = ["sqs:*"]
       resources = ["*"]
+    },
+    # OCR reads the uploaded documents. Read-only, no writes or deletes.
+    {
+      sid       = "ReadClaimDocuments"
+      effect    = "Allow"
+      actions   = ["s3:GetObject", "s3:ListBucket"]
+      resources = [dependency.documents.outputs.bucket_arn, "${dependency.documents.outputs.bucket_arn}/*"]
     },
   ]
 }
