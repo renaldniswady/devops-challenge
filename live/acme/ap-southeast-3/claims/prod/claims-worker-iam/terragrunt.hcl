@@ -17,10 +17,20 @@ dependency "eks" {
 
 dependency "queue" {
   config_path = "../claims-documents-queue"
+
+  mock_outputs = {
+    queue_arn = "arn:aws:sqs:ap-southeast-3:111111111111:claims-documents"
+  }
+  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
 }
 
 dependency "documents" {
   config_path = "../claim-documents-bucket"
+
+  mock_outputs = {
+    bucket_arn = "arn:aws:s3:::acme-claim-documents-prod"
+  }
+  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
 }
 
 inputs = {
