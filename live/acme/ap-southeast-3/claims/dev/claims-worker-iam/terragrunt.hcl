@@ -24,6 +24,15 @@ dependency "queue" {
   mock_outputs_allowed_terraform_commands = ["validate", "plan"]
 }
 
+dependency "documents" {
+  config_path = "../claim-documents-bucket"
+
+  mock_outputs = {
+    bucket_arn = "arn:aws:s3:::acme-claim-documents-dev"
+  }
+  mock_outputs_allowed_terraform_commands = ["validate", "plan"]
+}
+
 inputs = {
   name              = "claims-worker-dev"
   oidc_provider_arn = dependency.eks.outputs.oidc_provider_arn
@@ -41,6 +50,13 @@ inputs = {
         "sqs:GetQueueAttributes",
       ]
       resources = [dependency.queue.outputs.queue_arn]
+    },
+    # OCR reads the uploaded documents. Read-only, no writes or deletes.
+    {
+      sid       = "ReadClaimDocuments"
+      effect    = "Allow"
+      actions   = ["s3:GetObject", "s3:ListBucket"]
+      resources = [dependency.documents.outputs.bucket_arn, "${dependency.documents.outputs.bucket_arn}/*"]
     },
   ]
 }

@@ -11,6 +11,8 @@ env:
   QUEUE_URL: https://sqs.ap-southeast-3.amazonaws.com/111111111111/claims-documents
   DATABASE_URL: postgres://claims:Cl41ms-Pr0d-2024!@claims-db.prod.acme.internal:5432/claims
   WORKER_CONCURRENCY: "4"
+  # Where uploaded claim documents live; the worker fetches objects from here for OCR.
+  DOCUMENTS_BUCKET: acme-claim-documents-prod
 
 autoscaling:
   enabled: true
