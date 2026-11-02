@@ -30,3 +30,17 @@ run "redrive_uses_max_receive_count" {
     error_message = "Redrive policy should use max_receive_count"
   }
 }
+
+run "alarm_notification_topic_exists" {
+  command = apply
+
+  assert {
+    condition     = aws_sns_topic.alarm_notifications.name_prefix == "test-queue-alarms"
+    error_message = "The alarm notification topic should be created alongside the queue"
+  }
+
+  assert {
+    condition     = output.alarm_topic_arn == aws_sns_topic.alarm_notifications.arn
+    error_message = "alarm_topic_arn should point at the module's SNS topic"
+  }
+}

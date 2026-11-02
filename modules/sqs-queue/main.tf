@@ -21,6 +21,14 @@ resource "aws_sqs_queue" "this" {
   tags = var.tags
 }
 
+# Notification channel for the alarm. The alarm below used to have no target at all,
+# which is why the queue backlog went unnoticed until customers called — see
+# incident/2026-10-14-claims-worker-crashloop/postmortem.md. Subscribe Slack / on-call here.
+resource "aws_sns_topic" "alarm_notifications" {
+  name_prefix = "${var.name}-alarms"
+  tags        = var.tags
+}
+
 resource "aws_cloudwatch_metric_alarm" "oldest_message_age" {
   alarm_name        = "${var.name}-oldest-message-age"
   alarm_description = "Messages in ${var.name} are not being consumed"

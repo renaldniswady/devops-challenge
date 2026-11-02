@@ -23,7 +23,9 @@ inputs = {
   name              = "claims-worker-prod"
   oidc_provider_arn = dependency.eks.outputs.oidc_provider_arn
   namespace         = "claims"
-  service_account   = "claims-worker"
+  # The pods run as this service account (see apps/acme-prod-cluster/values/claims-worker.yaml);
+  # the OIDC sub claim must match exactly or STS rejects the token.
+  service_account   = "claims-worker-sa"
 
   policy_statements = [
     {
